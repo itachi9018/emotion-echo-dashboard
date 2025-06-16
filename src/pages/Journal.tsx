@@ -1,11 +1,11 @@
-
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
+import { Slider } from "@/components/ui/slider";
 import { useToast } from "@/hooks/use-toast";
-import { ArrowLeft, Save, Clock } from "lucide-react";
+import { ArrowLeft, Save, Clock, Hash, CloudUpload } from "lucide-react";
 import { Link } from "react-router-dom";
 
 const moodEmojis = [
@@ -28,10 +28,47 @@ const contexts = [
 
 const Journal = () => {
   const [selectedMood, setSelectedMood] = useState<number | null>(null);
+  const [moodIntensity, setMoodIntensity] = useState([3]);
   const [journalText, setJournalText] = useState("");
   const [selectedEmotions, setSelectedEmotions] = useState<string[]>([]);
   const [selectedContexts, setSelectedContexts] = useState<string[]>([]);
+  const [tags, setTags] = useState<string[]>([]);
+  const [tagInput, setTagInput] = useState("");
+  const [isAutoSaving, setIsAutoSaving] = useState(false);
   const { toast } = useToast();
+
+  // Auto-save functionality
+  useEffect(() => {
+    if (journalText.trim() || selectedMood || selectedEmotions.length > 0) {
+      setIsAutoSaving(true);
+      const timer = setTimeout(() => {
+        // Simulate auto-save
+        setIsAutoSaving(false);
+      }, 2000);
+      return () => clearTimeout(timer);
+    }
+  }, [journalText, selectedMood, selectedEmotions]);
+
+  const handleTagInput = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      const tag = tagInput.trim().replace(/^#/, '');
+      if (tag && !tags.includes(tag)) {
+        setTags([...tags, tag]);
+        setTagInput('');
+      }
+    }
+  };
+
+  const removeTag = (tagToRemove: string) => {
+    setTags(tags.filter(tag => tag !== tagToRemove));
+  };
+
+  const getMoodIntensityColor = (intensity: number) => {
+    if (intensity <= 2) return "from-blue-400 to-blue-600";
+    if (intensity <= 4) return "from-yellow-400 to-yellow-600";
+    return "from-red-400 to-red-600";
+  };
 
   const toggleEmotion = (emotion: string) => {
     setSelectedEmotions(prev => 
@@ -134,23 +171,91 @@ const Journal = () => {
             </CardContent>
           </Card>
 
+          {/* Step 1.5: Mood Intensity Slider */}
+          {selectedMood && (
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <span className="w-6 h-6 bg-purple-100 text-purple-600 rounded-full text-sm flex items-center justify-center font-semibold">1.5</span>
+                  How intense is this feeling?
+                </CardTitle>
+                <CardDescription>Rate the intensity of your current mood</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  <Slider
+                    value={moodIntensity}
+                    onValueChange={setMoodIntensity}
+                    max={5}
+                    min={1}
+                    step={1}
+                    className="w-full"
+                  />
+                  <div className="flex justify-between text-sm text-gray-600">
+                    <span>Mild</span>
+                    <span>Moderate</span>
+                    <span>Intense</span>
+                  </div>
+                  <div className={`h-2 rounded-full bg-gradient-to-r ${getMoodIntensityColor(moodIntensity[0])}`} />
+                </div>
+              </CardContent>
+            </Card>
+          )}
+
           {/* Step 2: Journal Text */}
-          <Card>
+          <Card className="bg-gradient-to-br from-blue-50 to-indigo-50 border-blue-200">
             <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <span className="w-6 h-6 bg-purple-100 text-purple-600 rounded-full text-sm flex items-center justify-center font-semibold">2</span>
-                Tell us about your day
+              <CardTitle className="flex items-center gap-2 text-blue-900">
+                <span className="w-6 h-6 bg-blue-100 text-blue-600 rounded-full text-sm flex items-center justify-center font-semibold">2</span>
+                What happened today?
               </CardTitle>
-              <CardDescription>What happened? How did it make you feel?</CardDescription>
+              <CardDescription className="text-blue-700 font-medium">
+                Share your thoughts, experiences, and feelings from today
+              </CardDescription>
             </CardHeader>
             <CardContent>
               <Textarea
                 placeholder="Today I felt... because..."
                 value={journalText}
                 onChange={(e) => setJournalText(e.target.value)}
-                className="min-h-[120px] resize-none"
+                className="min-h-[120px] resize-none bg-white border-blue-200 focus:border-blue-400 focus:ring-blue-200"
               />
-              <p className="text-xs text-gray-500 mt-2">{journalText.length} characters</p>
+              <p className="text-xs text-blue-600 mt-2">{journalText.length} characters</p>
+            </CardContent>
+          </Card>
+
+          {/* Step 2.5: Tags */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Hash className="w-5 h-5 text-purple-600" />
+                Add Tags
+              </CardTitle>
+              <CardDescription>Tag your entry with hashtags (e.g., #stress, #family)</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              <input
+                type="text"
+                placeholder="Type a tag and press Enter..."
+                value={tagInput}
+                onChange={(e) => setTagInput(e.target.value)}
+                onKeyDown={handleTagInput}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+              />
+              {tags.length > 0 && (
+                <div className="flex flex-wrap gap-2">
+                  {tags.map((tag) => (
+                    <Badge
+                      key={tag}
+                      variant="secondary"
+                      className="bg-purple-100 text-purple-700 cursor-pointer hover:bg-purple-200"
+                      onClick={() => removeTag(tag)}
+                    >
+                      #{tag} ×
+                    </Badge>
+                  ))}
+                </div>
+              )}
             </CardContent>
           </Card>
 
@@ -228,15 +333,23 @@ const Journal = () => {
             </CardContent>
           </Card>
 
-          {/* Save Button */}
-          <Button 
-            onClick={handleSave}
-            className="w-full bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white"
-            size="lg"
-          >
-            <Save className="w-4 h-4 mr-2" />
-            Save Entry
-          </Button>
+          {/* Save Button with Auto-Save Indicator */}
+          <div className="flex items-center gap-4">
+            <Button 
+              onClick={handleSave}
+              className="flex-1 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white"
+              size="lg"
+            >
+              <Save className="w-4 h-4 mr-2" />
+              Save Entry
+            </Button>
+            {isAutoSaving && (
+              <div className="flex items-center gap-2 text-sm text-gray-600 bg-gray-100 px-3 py-2 rounded-full">
+                <CloudUpload className="w-4 h-4 animate-pulse" />
+                Auto-saving draft...
+              </div>
+            )}
+          </div>
         </div>
 
         {/* Sidebar: Previous Entries */}

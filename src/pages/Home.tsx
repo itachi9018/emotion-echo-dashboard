@@ -2,9 +2,9 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { LineChart, Line, XAxis, YAxis, ResponsiveContainer } from "recharts";
+import { LineChart, Line, XAxis, YAxis, ResponsiveContainer, BarChart, Bar } from "recharts";
 import { Link } from "react-router-dom";
-import { Calendar, TrendingUp, Plus, Smile } from "lucide-react";
+import { Calendar, TrendingUp, Plus, Smile, BookOpen, BarChart3, Target } from "lucide-react";
 
 const mockData = [
   { day: "Mon", mood: 4 },
@@ -16,11 +16,31 @@ const mockData = [
   { day: "Sun", mood: 3 },
 ];
 
+// Mini emotional summary data for past 5 days
+const emotionalSummaryData = [
+  { day: "Wed", happy: 3, calm: 2, energetic: 4, grateful: 2 },
+  { day: "Thu", happy: 4, calm: 3, energetic: 2, grateful: 3 },
+  { day: "Fri", happy: 5, calm: 4, energetic: 5, grateful: 4 },
+  { day: "Sat", happy: 3, calm: 5, energetic: 3, grateful: 3 },
+  { day: "Sun", happy: 2, calm: 3, energetic: 2, grateful: 4 },
+];
+
 const moodEmojis = ["😢", "😟", "😐", "🙂", "😄"];
+
+const dailyTips = [
+  "What energized you today?",
+  "Take a moment to appreciate three things around you.",
+  "How did you show kindness to yourself today?",
+  "What made you smile this morning?",
+  "Notice how your body feels right now - are you tense or relaxed?",
+  "What's one small win you achieved today?",
+  "How are you feeling in this very moment?"
+];
 
 const Home = () => {
   const todayMood = 4;
   const streak = 5;
+  const todayTip = dailyTips[new Date().getDay()];
   
   return (
     <div className="space-y-6">
@@ -29,6 +49,10 @@ const Home = () => {
         <div>
           <h1 className="text-3xl font-bold text-gray-900">Welcome back, John! 👋</h1>
           <p className="text-gray-600 mt-1">How are you feeling today?</p>
+          <div className="mt-3 p-3 bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg border border-blue-200">
+            <p className="text-sm font-medium text-blue-800">💭 Daily Reflection</p>
+            <p className="text-blue-700 mt-1">{todayTip}</p>
+          </div>
         </div>
         <Link to="/journal">
           <Button className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600">
@@ -36,6 +60,27 @@ const Home = () => {
             Log Today's Mood
           </Button>
         </Link>
+      </div>
+
+      {/* Action Buttons */}
+      <div className="grid gap-3 sm:grid-cols-3">
+        <Link to="/journal">
+          <Button variant="outline" className="w-full h-12 flex items-center justify-center gap-2">
+            <BookOpen className="w-4 h-4" />
+            Open Journal
+          </Button>
+        </Link>
+        <Link to="/history">
+          <Button variant="outline" className="w-full h-12 flex items-center justify-center gap-2">
+            <BarChart3 className="w-4 h-4" />
+            View Trends
+          </Button>
+        </Link>
+        <Button variant="outline" className="w-full h-12 flex items-center justify-center gap-2" disabled>
+          <Target className="w-4 h-4" />
+          Start Challenge
+          <Badge variant="secondary" className="ml-2 text-xs">Soon</Badge>
+        </Button>
       </div>
 
       {/* Quick Stats */}
@@ -84,6 +129,49 @@ const Home = () => {
           </CardContent>
         </Card>
       </div>
+
+      {/* Mini Emotional Summary Chart */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <BarChart3 className="w-5 h-5 text-purple-600" />
+            Emotional Summary - Past 5 Days
+          </CardTitle>
+          <CardDescription>Your emotional patterns this week</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="h-[200px]">
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart data={emotionalSummaryData}>
+                <XAxis dataKey="day" />
+                <YAxis domain={[0, 5]} />
+                <Bar dataKey="happy" fill="#fbbf24" name="Happy" />
+                <Bar dataKey="calm" fill="#10b981" name="Calm" />
+                <Bar dataKey="energetic" fill="#f97316" name="Energetic" />
+                <Bar dataKey="grateful" fill="#ec4899" name="Grateful" />
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+          <div className="flex gap-4 mt-4 text-xs">
+            <div className="flex items-center gap-2">
+              <div className="w-3 h-3 bg-yellow-400 rounded"></div>
+              <span>Happy</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="w-3 h-3 bg-emerald-500 rounded"></div>
+              <span>Calm</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="w-3 h-3 bg-orange-500 rounded"></div>
+              <span>Energetic</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="w-3 h-3 bg-pink-500 rounded"></div>
+              <span>Grateful</span>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
 
       {/* Mood Trend & Quick Entry */}
       <div className="grid gap-6 lg:grid-cols-2">

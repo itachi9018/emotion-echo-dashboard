@@ -19,7 +19,7 @@ const App = () => (
     <TooltipProvider>
       <Toaster />
       <Sonner />
-      <BrowserRouter basename="/emotiq">
+      <BrowserRouter basename="/emotion-echo-dashboard">
         <SidebarProvider>
           <div className="min-h-screen flex w-full bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50">
             <Routes>

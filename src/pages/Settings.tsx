@@ -1,17 +1,27 @@
-
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Separator } from "@/components/ui/separator";
-import { User, Bell, Palette, Link, Download, LogOut, Shield } from "lucide-react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Label } from "@/components/ui/label";
+import { User, Bell, Palette, Link, Download, LogOut, Shield, Globe, FileText, Users } from "lucide-react";
 import { useState } from "react";
 
 const Settings = () => {
   const [darkMode, setDarkMode] = useState(false);
   const [dailyReminder, setDailyReminder] = useState(true);
   const [weeklyReport, setWeeklyReport] = useState(false);
+  const [interfaceLanguage, setInterfaceLanguage] = useState("english");
+  const [interfaceTone, setInterfaceTone] = useState("supportive");
+  const [journalVisibility, setJournalVisibility] = useState("private");
+
+  const handleExport = (format: string) => {
+    console.log(`Exporting data as ${format}`);
+    // Export functionality would be implemented here
+  };
 
   return (
     <div className="max-w-4xl mx-auto space-y-6">
@@ -70,6 +80,55 @@ const Settings = () => {
         </CardContent>
       </Card>
 
+      {/* Interface Preferences */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Globe className="w-5 h-5 text-purple-600" />
+            Interface Preferences
+          </CardTitle>
+          <CardDescription>Customize your app experience</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-6">
+          <div className="grid gap-6 sm:grid-cols-2">
+            <div>
+              <Label className="text-sm font-medium text-gray-700">Interface Language</Label>
+              <Select value={interfaceLanguage} onValueChange={setInterfaceLanguage}>
+                <SelectTrigger className="mt-2">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="english">English</SelectItem>
+                  <SelectItem value="spanish">Español</SelectItem>
+                  <SelectItem value="french">Français</SelectItem>
+                  <SelectItem value="german">Deutsch</SelectItem>
+                  <SelectItem value="japanese">日本語</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            
+            <div>
+              <Label className="text-sm font-medium text-gray-700">Interface Tone</Label>
+              <Select value={interfaceTone} onValueChange={setInterfaceTone}>
+                <SelectTrigger className="mt-2">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="supportive">Supportive & Encouraging</SelectItem>
+                  <SelectItem value="formal">Professional & Formal</SelectItem>
+                  <SelectItem value="casual">Casual & Friendly</SelectItem>
+                  <SelectItem value="clinical">Clinical & Objective</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+          
+          <div className="text-sm text-gray-500 bg-blue-50 p-3 rounded-lg">
+            💡 Interface changes will take effect immediately and influence how the app communicates with you.
+          </div>
+        </CardContent>
+      </Card>
+
       {/* Appearance */}
       <Card>
         <CardHeader>
@@ -89,6 +148,53 @@ const Settings = () => {
               checked={darkMode} 
               onCheckedChange={setDarkMode}
             />
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Privacy & Sharing */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Users className="w-5 h-5 text-purple-600" />
+            Privacy & Sharing
+          </CardTitle>
+          <CardDescription>Control who can see your journal entries</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div>
+            <Label className="text-sm font-medium text-gray-700 mb-3 block">Journal Visibility</Label>
+            <RadioGroup value={journalVisibility} onValueChange={setJournalVisibility} className="space-y-3">
+              <div className="flex items-start space-x-3 p-3 border rounded-lg">
+                <RadioGroupItem value="private" id="private" className="mt-0.5" />
+                <div className="flex-1">
+                  <Label htmlFor="private" className="font-medium cursor-pointer">Private</Label>
+                  <p className="text-sm text-gray-600 mt-1">Only you can see your entries. Complete privacy guaranteed.</p>
+                </div>
+              </div>
+              
+              <div className="flex items-start space-x-3 p-3 border rounded-lg">
+                <RadioGroupItem value="public" id="public" className="mt-0.5" />
+                <div className="flex-1">
+                  <Label htmlFor="public" className="font-medium cursor-pointer">Public</Label>
+                  <p className="text-sm text-gray-600 mt-1">Your entries are visible to the community (anonymous). Help others by sharing your journey.</p>
+                </div>
+              </div>
+              
+              <div className="flex items-start space-x-3 p-3 border rounded-lg">
+                <RadioGroupItem value="coach" id="coach" className="mt-0.5" />
+                <div className="flex-1">
+                  <Label htmlFor="coach" className="font-medium cursor-pointer">Share with Coach</Label>
+                  <p className="text-sm text-gray-600 mt-1">Only your assigned mental health coach can view your entries for better support.</p>
+                </div>
+              </div>
+            </RadioGroup>
+          </div>
+          
+          <div className="bg-amber-50 p-3 rounded-lg border border-amber-200">
+            <p className="text-sm text-amber-800">
+              <strong>Note:</strong> You can change visibility settings at any time. Past entries will inherit the new setting.
+            </p>
           </div>
         </CardContent>
       </Card>
@@ -193,16 +299,34 @@ const Settings = () => {
           </CardTitle>
           <CardDescription>Manage your data and privacy settings</CardDescription>
         </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="font-medium">Export Your Data</p>
-              <p className="text-sm text-gray-600">Download all your journal entries and mood data</p>
+        <CardContent className="space-y-6">
+          <div>
+            <h4 className="font-medium text-gray-900 mb-3">Export Your Data</h4>
+            <p className="text-sm text-gray-600 mb-4">Download all your journal entries and mood data in your preferred format</p>
+            
+            <div className="grid gap-3 sm:grid-cols-2">
+              <Button 
+                variant="outline" 
+                onClick={() => handleExport('csv')}
+                className="justify-start"
+              >
+                <FileText className="w-4 h-4 mr-2" />
+                Export as CSV
+              </Button>
+              
+              <Button 
+                variant="outline" 
+                onClick={() => handleExport('pdf')}
+                className="justify-start"
+              >
+                <Download className="w-4 h-4 mr-2" />
+                Export as PDF
+              </Button>
             </div>
-            <Button variant="outline" disabled>
-              <Download className="w-4 h-4 mr-2" />
-              Export
-            </Button>
+            
+            <div className="text-xs text-gray-500 mt-2">
+              CSV format includes raw data for analysis. PDF format provides a formatted report.
+            </div>
           </div>
           
           <Separator />

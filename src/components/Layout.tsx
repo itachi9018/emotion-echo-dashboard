@@ -2,6 +2,7 @@
 import { Outlet } from "react-router-dom";
 import { AppSidebar } from "./AppSidebar";
 import { SidebarTrigger } from "@/components/ui/sidebar";
+import AIInsights from "./AIInsights";
 
 const Layout = () => {
   return (
@@ -14,6 +15,7 @@ const Layout = () => {
           </div>
           <Outlet />
         </div>
+        <AIInsights />
       </main>
     </>
   );

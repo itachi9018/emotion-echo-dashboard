@@ -1,4 +1,5 @@
-import { Home, History, Settings, User, LogOut, Brain } from "lucide-react";
+
+import { Home, History, Settings, User, LogOut, Brain, HeartHandshake } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import {
   Sidebar,
@@ -31,6 +32,11 @@ const menuItems = [
     title: "CBT Tools",
     url: "/cbt-tools",
     icon: Brain,
+  },
+  {
+    title: "Support",
+    url: "/support",
+    icon: HeartHandshake,
   },
   {
     title: "History",

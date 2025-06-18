@@ -10,6 +10,7 @@ import Home from "./pages/Home";
 import Journal from "./pages/Journal";
 import History from "./pages/History";
 import Settings from "./pages/Settings";
+import CBTTools from "./pages/CBTTools";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -27,6 +28,7 @@ const App = () => (
                 <Route index element={<Home />} />
                 <Route path="journal" element={<Journal />} />
                 <Route path="history" element={<History />} />
+                <Route path="cbt-tools" element={<CBTTools />} />
                 <Route path="settings" element={<Settings />} />
               </Route>
               <Route path="*" element={<NotFound />} />

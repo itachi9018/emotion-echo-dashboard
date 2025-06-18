@@ -1,6 +1,7 @@
 
-import { Home, History, Settings, User, LogOut, Brain, HeartHandshake } from "lucide-react";
+import { Home, History, Settings, User, LogOut, Brain, HeartHandshake, Users, TrendingUp, BarChart3 } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
+import { useState } from "react";
 import {
   Sidebar,
   SidebarContent,
@@ -17,8 +18,9 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/contexts/AuthContext";
+import WorkspaceSwitcher, { WorkspaceMode } from "./WorkspaceSwitcher";
 
-const menuItems = [
+const personalMenuItems = [
   {
     title: "Home",
     url: "/",
@@ -51,14 +53,53 @@ const menuItems = [
   },
 ];
 
+const organizationMenuItems = [
+  {
+    title: "Team Overview",
+    url: "/admin",
+    icon: Users,
+  },
+  {
+    title: "Mood Trends",
+    url: "/admin/trends",
+    icon: TrendingUp,
+  },
+  {
+    title: "User Management",
+    url: "/admin/users",
+    icon: User,
+  },
+  {
+    title: "Reports",
+    url: "/admin/reports",
+    icon: BarChart3,
+  },
+  {
+    title: "Settings",
+    url: "/admin/settings",
+    icon: Settings,
+  },
+];
+
 export function AppSidebar() {
   const location = useLocation();
   const { user, logout } = useAuth();
+  const [workspaceMode, setWorkspaceMode] = useState<WorkspaceMode>('personal');
+
+  // Determine which menu items to show based on workspace mode and user role
+  const getMenuItems = () => {
+    if (user?.role === 'admin' && workspaceMode === 'organization') {
+      return organizationMenuItems;
+    }
+    return personalMenuItems;
+  };
+
+  const menuItems = getMenuItems();
 
   return (
     <Sidebar className="border-r border-purple-100">
       <SidebarHeader className="p-6">
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-3 mb-4">
           <div className="w-8 h-8 bg-gradient-to-br from-purple-400 to-pink-400 rounded-lg flex items-center justify-center">
             <span className="text-white font-bold text-sm">E</span>
           </div>
@@ -69,11 +110,18 @@ export function AppSidebar() {
             <p className="text-xs text-muted-foreground">Emotional Intelligence Tracker</p>
           </div>
         </div>
+        
+        <WorkspaceSwitcher 
+          currentMode={workspaceMode}
+          onModeChange={setWorkspaceMode}
+        />
       </SidebarHeader>
       
       <SidebarContent>
         <SidebarGroup>
-          <SidebarGroupLabel className="text-purple-600 font-semibold">Navigation</SidebarGroupLabel>
+          <SidebarGroupLabel className="text-purple-600 font-semibold">
+            {workspaceMode === 'organization' ? 'Organization' : 'Navigation'}
+          </SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               {menuItems.map((item) => (

@@ -23,10 +23,18 @@ const WorkspaceSwitcher: React.FC<WorkspaceSwitcherProps> = ({
 }) => {
   const { user } = useAuth();
 
+  // Debug logging
+  console.log('WorkspaceSwitcher - Current user:', user);
+  console.log('WorkspaceSwitcher - User role:', user?.role);
+  console.log('WorkspaceSwitcher - Should show switcher:', user?.role === 'admin');
+
   // Only show workspace switcher for admin users
   if (user?.role !== 'admin') {
+    console.log('WorkspaceSwitcher - Hidden because user is not admin');
     return null;
   }
+
+  console.log('WorkspaceSwitcher - Rendering for admin user');
 
   const workspaces = [
     {

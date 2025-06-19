@@ -20,7 +20,7 @@ import ProtectedRoute from "./components/ProtectedRoute";
 
 const queryClient = new QueryClient();
 
-const AppRoutes = () => {
+const AppContent = () => {
   const { user, isLoading } = useAuth();
 
   if (isLoading) {
@@ -104,7 +104,7 @@ const App = () => (
       <Sonner />
       <AuthProvider>
         <BrowserRouter basename="/emotion-echo-dashboard">
-          <AppRoutes />
+          <AppContent />
         </BrowserRouter>
       </AuthProvider>
     </TooltipProvider>

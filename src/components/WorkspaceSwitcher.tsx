@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Building2, User, ChevronDown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -23,8 +22,8 @@ const WorkspaceSwitcher: React.FC<WorkspaceSwitcherProps> = ({
 }) => {
   const { user } = useAuth();
 
-  // Only show workspace switcher for admin users
-  if (user?.role !== 'admin') {
+  // Only show workspace switcher for regular users (not admins)
+  if (user?.role === 'admin') {
     return null;
   }
 

@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Building2, User, ChevronDown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
@@ -23,19 +23,6 @@ const WorkspaceSwitcher: React.FC<WorkspaceSwitcherProps> = ({
 }) => {
   const { user } = useAuth();
 
-  // Debug logging
-  console.log('WorkspaceSwitcher - Current user:', user);
-  console.log('WorkspaceSwitcher - User role:', user?.role);
-  console.log('WorkspaceSwitcher - Should show switcher:', user?.role === 'admin');
-
-  // Only show workspace switcher for admin users
-  if (user?.role !== 'admin') {
-    console.log('WorkspaceSwitcher - Hidden because user is not admin');
-    return null;
-  }
-
-  console.log('WorkspaceSwitcher - Rendering for admin user');
-
   const workspaces = [
     {
       mode: 'personal' as WorkspaceMode,
@@ -47,7 +34,7 @@ const WorkspaceSwitcher: React.FC<WorkspaceSwitcherProps> = ({
       mode: 'organization' as WorkspaceMode,
       label: 'Organization',
       icon: Building2,
-      description: 'Team wellness overview',
+      description: user?.role === 'admin' ? 'Team wellness overview' : 'Organization insights',
     },
   ];
 

@@ -16,6 +16,7 @@ import Support from "./pages/Support";
 import NotFound from "./pages/NotFound";
 import Auth from "./pages/Auth";
 import AdminDashboard from "./pages/AdminDashboard";
+import TeamWellness from "./pages/TeamWellness";
 import ProtectedRoute from "./components/ProtectedRoute";
 
 const queryClient = new QueryClient();
@@ -40,24 +41,13 @@ const AppContent = () => {
     return <Auth />;
   }
 
-  // Admin users get redirected to admin dashboard
-  if (user.role === 'admin') {
-    return (
-      <div className="min-h-screen flex w-full bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50">
-        <Routes>
-          <Route path="/admin" element={<AdminDashboard />} />
-          <Route path="*" element={<Navigate to="/admin" replace />} />
-        </Routes>
-      </div>
-    );
-  }
-
-  // Regular users get the normal app experience
+  // Use unified layout for all authenticated users
   return (
     <SidebarProvider>
       <div className="min-h-screen flex w-full bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50">
         <Routes>
           <Route path="/" element={<Layout />}>
+            {/* Personal workspace routes */}
             <Route index element={
               <ProtectedRoute requiredRole="user">
                 <Home />
@@ -88,8 +78,56 @@ const AppContent = () => {
                 <Settings />
               </ProtectedRoute>
             } />
+            
+            {/* Organization workspace routes for admins */}
+            <Route path="admin" element={
+              <ProtectedRoute requiredRole="admin">
+                <AdminDashboard />
+              </ProtectedRoute>
+            } />
+            <Route path="admin/trends" element={
+              <ProtectedRoute requiredRole="admin">
+                <div className="p-6"><h1 className="text-2xl font-bold">Mood Trends</h1></div>
+              </ProtectedRoute>
+            } />
+            <Route path="admin/users" element={
+              <ProtectedRoute requiredRole="admin">
+                <div className="p-6"><h1 className="text-2xl font-bold">User Management</h1></div>
+              </ProtectedRoute>
+            } />
+            <Route path="admin/reports" element={
+              <ProtectedRoute requiredRole="admin">
+                <div className="p-6"><h1 className="text-2xl font-bold">Reports</h1></div>
+              </ProtectedRoute>
+            } />
+            <Route path="admin/settings" element={
+              <ProtectedRoute requiredRole="admin">
+                <div className="p-6"><h1 className="text-2xl font-bold">Admin Settings</h1></div>
+              </ProtectedRoute>
+            } />
+
+            {/* Organization workspace routes for regular users */}
+            <Route path="team/wellness" element={
+              <ProtectedRoute requiredRole="user">
+                <TeamWellness />
+              </ProtectedRoute>
+            } />
+            <Route path="team/summary" element={
+              <ProtectedRoute requiredRole="user">
+                <div className="p-6"><h1 className="text-2xl font-bold">Organization Mood Summary</h1></div>
+              </ProtectedRoute>
+            } />
+            <Route path="team/checkins" element={
+              <ProtectedRoute requiredRole="user">
+                <div className="p-6"><h1 className="text-2xl font-bold">Group Check-in Reminders</h1></div>
+              </ProtectedRoute>
+            } />
+            <Route path="team/insights" element={
+              <ProtectedRoute requiredRole="user">
+                <div className="p-6"><h1 className="text-2xl font-bold">Peer Insights</h1></div>
+              </ProtectedRoute>
+            } />
           </Route>
-          <Route path="/admin" element={<Navigate to="/" replace />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </div>

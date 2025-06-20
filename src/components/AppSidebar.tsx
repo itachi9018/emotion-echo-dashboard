@@ -1,7 +1,7 @@
 
 import { Home, History, Settings, User, LogOut, Brain, HeartHandshake, Users, TrendingUp, BarChart3 } from "lucide-react";
-import { Link, useLocation } from "react-router-dom";
-import { useState } from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
 import {
   Sidebar,
   SidebarContent,
@@ -53,7 +53,7 @@ const personalMenuItems = [
   },
 ];
 
-const organizationMenuItems = [
+const organizationMenuItemsAdmin = [
   {
     title: "Team Overview",
     url: "/admin",
@@ -81,15 +81,65 @@ const organizationMenuItems = [
   },
 ];
 
+const organizationMenuItemsUser = [
+  {
+    title: "Team Wellness",
+    url: "/team/wellness",
+    icon: Users,
+  },
+  {
+    title: "Mood Summary",
+    url: "/team/summary",
+    icon: TrendingUp,
+  },
+  {
+    title: "Group Check-ins",
+    url: "/team/checkins",
+    icon: HeartHandshake,
+  },
+  {
+    title: "Peer Insights",
+    url: "/team/insights",
+    icon: Brain,
+  },
+];
+
 export function AppSidebar() {
   const location = useLocation();
+  const navigate = useNavigate();
   const { user, logout } = useAuth();
-  const [workspaceMode, setWorkspaceMode] = useState<WorkspaceMode>('personal');
+  
+  // Initialize workspace mode from localStorage or default to personal
+  const [workspaceMode, setWorkspaceMode] = useState<WorkspaceMode>(() => {
+    const saved = localStorage.getItem('workspaceMode');
+    return (saved as WorkspaceMode) || 'personal';
+  });
+
+  // Save workspace mode to localStorage whenever it changes
+  useEffect(() => {
+    localStorage.setItem('workspaceMode', workspaceMode);
+  }, [workspaceMode]);
+
+  // Handle workspace mode change and navigation
+  const handleWorkspaceModeChange = (mode: WorkspaceMode) => {
+    setWorkspaceMode(mode);
+    
+    // Navigate to appropriate route based on mode
+    if (mode === 'organization') {
+      if (user?.role === 'admin') {
+        navigate('/admin');
+      } else {
+        navigate('/team/wellness');
+      }
+    } else {
+      navigate('/');
+    }
+  };
 
   // Determine which menu items to show based on workspace mode and user role
   const getMenuItems = () => {
-    if (user?.role === 'admin' && workspaceMode === 'organization') {
-      return organizationMenuItems;
+    if (workspaceMode === 'organization') {
+      return user?.role === 'admin' ? organizationMenuItemsAdmin : organizationMenuItemsUser;
     }
     return personalMenuItems;
   };
@@ -113,7 +163,7 @@ export function AppSidebar() {
         
         <WorkspaceSwitcher 
           currentMode={workspaceMode}
-          onModeChange={setWorkspaceMode}
+          onModeChange={handleWorkspaceModeChange}
         />
       </SidebarHeader>
       

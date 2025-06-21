@@ -1,5 +1,4 @@
 
-import { Home, History, Settings, User, LogOut, Brain, HeartHandshake, Users, TrendingUp, BarChart3, BookOpen } from "lucide-react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import {
@@ -14,105 +13,20 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/contexts/AuthContext";
 import WorkspaceSwitcher, { WorkspaceMode } from "./WorkspaceSwitcher";
-
-const personalMenuItems = [
-  {
-    title: "Home",
-    url: "/",
-    icon: Home,
-  },
-  {
-    title: "Journal",
-    url: "/journal",
-    icon: Settings,
-  },
-  {
-    title: "CBT Tools",
-    url: "/cbt-tools",
-    icon: Brain,
-  },
-  {
-    title: "Support",
-    url: "/support",
-    icon: HeartHandshake,
-  },
-  {
-    title: "History",
-    url: "/history",
-    icon: History,
-  },
-  {
-    title: "Settings",
-    url: "/settings",
-    icon: Settings,
-  },
-];
-
-const organizationMenuItemsAdmin = [
-  {
-    title: "Team Overview",
-    url: "/admin",
-    icon: Users,
-  },
-  {
-    title: "Mood Trends",
-    url: "/admin/trends",
-    icon: TrendingUp,
-  },
-  {
-    title: "User Management",
-    url: "/admin/users",
-    icon: User,
-  },
-  {
-    title: "Journals Overview",
-    url: "/admin/journals",
-    icon: BookOpen,
-  },
-  {
-    title: "Reports",
-    url: "/admin/reports",
-    icon: BarChart3,
-  },
-  {
-    title: "Settings",
-    url: "/admin/settings",
-    icon: Settings,
-  },
-];
-
-const organizationMenuItemsUser = [
-  {
-    title: "Team Wellness",
-    url: "/team/wellness",
-    icon: Users,
-  },
-  {
-    title: "Mood Summary",
-    url: "/team/summary",
-    icon: TrendingUp,
-  },
-  {
-    title: "Group Check-ins",
-    url: "/team/checkins",
-    icon: HeartHandshake,
-  },
-  {
-    title: "Peer Insights",
-    url: "/team/insights",
-    icon: Brain,
-  },
-];
+import SidebarUserProfile from "./sidebar/SidebarUserProfile";
+import { 
+  personalMenuItems, 
+  organizationMenuItemsAdmin, 
+  organizationMenuItemsUser 
+} from "./sidebar/SidebarMenuItems";
 
 export function AppSidebar() {
   const location = useLocation();
   const navigate = useNavigate();
-  const { user, logout } = useAuth();
+  const { user } = useAuth();
   
   // Initialize workspace mode from localStorage or default to personal
   const [workspaceMode, setWorkspaceMode] = useState<WorkspaceMode>(() => {
@@ -201,21 +115,7 @@ export function AppSidebar() {
       </SidebarContent>
 
       <SidebarFooter className="p-4">
-        <div className="flex items-center gap-3 p-3 rounded-lg bg-purple-50">
-          <Avatar className="w-8 h-8">
-            <AvatarImage src="" />
-            <AvatarFallback className="bg-purple-200 text-purple-700">
-              {user?.name?.split(' ').map(n => n[0]).join('') || 'U'}
-            </AvatarFallback>
-          </Avatar>
-          <div className="flex-1 min-w-0">
-            <p className="text-sm font-medium text-purple-900">{user?.name || 'User'}</p>
-            <p className="text-xs text-purple-600 truncate">{user?.email}</p>
-          </div>
-          <Button variant="ghost" size="sm" className="text-purple-600 hover:text-purple-700" onClick={logout}>
-            <LogOut className="w-4 h-4" />
-          </Button>
-        </div>
+        <SidebarUserProfile />
       </SidebarFooter>
     </Sidebar>
   );

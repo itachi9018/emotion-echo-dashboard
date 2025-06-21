@@ -1,5 +1,5 @@
 
-import { Home, History, Settings, User, LogOut, Brain, HeartHandshake, Users, TrendingUp, BarChart3 } from "lucide-react";
+import { Home, History, Settings, User, LogOut, Brain, HeartHandshake, Users, TrendingUp, BarChart3, BookOpen } from "lucide-react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import {
@@ -68,6 +68,11 @@ const organizationMenuItemsAdmin = [
     title: "User Management",
     url: "/admin/users",
     icon: User,
+  },
+  {
+    title: "Journals Overview",
+    url: "/admin/journals",
+    icon: BookOpen,
   },
   {
     title: "Reports",
